@@ -1,5 +1,6 @@
 from random import randint, choice
 import pyxel
+import time
 
 class Main_Char:
 
@@ -11,6 +12,10 @@ class Main_Char:
     def draw(self):
         coef = pyxel.frame_count // 6 % 3
         pyxel.blt(self.player_X, self.player_Y, 0, 16*coef, 0, 16, 16, 11)
+
+    def draw_in_fight(self):
+        coef = pyxel.frame_count // 6 % 3
+        pyxel.blt(self.player_X, self.player_Y, 0, 48+16*coef, 0, 16, 16, 11)
     
     def move(self):
         if (pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)) and self.player_X > 17:
@@ -42,20 +47,28 @@ class Game:
         pyxel.load("ressources.pyxres")
 
         self.start = True
-        
+        self.turn = 1
+        self.start_time = time.time()
+
         self.char = Main_Char(56, 110)
         self.monsters_list = []
 
         pyxel.run(self.update, self.draw)
 
     def create_monster(self):
-        self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+        lvl =  2 if self.turn == 5 else 3 if self.turn == 10 else 1
+        if lvl == 1:
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+        elif lvl == 2:
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+        elif lvl == 3:
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
 
     def new_dungeon_monsters(self, nb):
         for _ in range(nb):
             self.create_monster()
     
-    def new_dungeon(self, nb, coo_x, coo_y):
+    def new_dungeon(self):
         self.new_dungeon_monsters(5)
         return randint(0, 1)
     
@@ -67,6 +80,16 @@ class Game:
             for i in range(8):
                 pyxel.blt(112*j, 16*i, 0, 16*wall, 80, 16, 16)
 
+        for j in range(6):
+            for i in range(6):
+                pyxel.blt(16+16*j, 16+16*i, 0, 0, 96, 16, 16)
+
+    def fight(self):
+        for monster in self.monsters_list:
+            if self.char.player_X - monster.monster_x <= abs(2) and self.char.player_Y - monster.monster_Y <= abs(2):
+                if pyxel.btn(pyxel.KEY_SPACE):
+                    pass
+
     def update(self):
         self.char.move()
 
@@ -74,18 +97,17 @@ class Game:
         pyxel.cls(0)
 
         if self.start:
-            self.wall = self.new_dungeon(0, 0, 52)
+            self.wall = self.new_dungeon()
             self.start = False
 
-        if self.char.life > 0:
-
-            pyxel.text(5, 5, f"{self.char.life} HP", 7)
+        if self.char.life > 0 and self.turn <= 10:
 
             if len(self.monsters_list) == 0:
                 pyxel.blt(48, 0, 0, 0, 64, 32, 16)
                 if self.char.player_X >= 48 and self.char.player_X <= 80 and self.char.player_Y <= 16:
-                    self.wall = self.new_dungeon(0, 0, 52)
+                    self.wall = self.new_dungeon()
                     self.char.player_X, self.char.player_Y = 56, 110
+                    self.turn += 1
 
             self.draw_dungeon(self.wall)
 
@@ -96,5 +118,16 @@ class Game:
 
             self.char.draw()
 
+            color = 11 if self.wall == 1 else 7
+            pyxel.text(100, 5, f"{self.char.life} HP", color)
+            pyxel.text(5, 5, f"{int(time.time() - self.start_time)}s", color)
+
+        elif self.char.life <= 0:
+            pyxel.text(5, 5, f"Vous avez perdu !\nVous étiez manche n°{self.turn}", 7)
+
+        elif self.turn > 10:
+            self.end_time = time.time()
+            pyxel.text(5, 5, f"Bravo ! Vous avez gagné en {self.start_time - self.end_time}.", 7)
+            pyxel.blt(56, 70, 0, "X", "Y", 16, 16, 11)
 
 Game()
