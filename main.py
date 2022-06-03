@@ -1,3 +1,17 @@
+"""
+Documentation:
+
+Le but du jeu est simple, le joueur doit survivre aller au plus loin dans le jeu en traverssant les salles, pour cela,
+le joueur doit tuer tous les énemies pour ouvrir la porte qui permet d'avancer à la salle d'après.
+
+Ce jeu se joue avec les flèches directionnelles du clavier, le joueur peut aussi utiliser les touches espace pour taper les énemies.
+
+1ere fin: Lorsque le joueur meurt la partie est finie, le nombre de salles parcourues est est le score du joueur (son chrono sera aussi indiqué).
+2eme fin: Lorsque le joueur arrive à aller au dela de la 10eme salle la partie est gagnée.
+
+
+"""
+
 from random import randint, choice
 import pyxel
 import time
@@ -79,6 +93,7 @@ class Game:
         self.char = Main_Char(56, 110)
         self.monsters_list = []
 
+        pyxel.playm(0, loop = True)
         pyxel.mouse(True)
 
         self.home_state = True
@@ -133,7 +148,7 @@ class Game:
                         return True
             else:
                 if monster.monster_X <= self.char.player_X+30 and monster.monster_Y <= self.char.player_Y+30 and monster.monster_X+30 >= self.char.player_X and monster.monster_Y+30 >= self.char.player_Y:
-                    self.char.life -= 5
+                    self.char.life -= 15
                     self.char.player_Y += randint(5, 15)
                 if monster.monster_X <= self.char.player_X+35 and monster.monster_Y <= self.char.player_Y+35 and monster.monster_X+35 >= self.char.player_X and monster.monster_Y+35 >= self.char.player_Y:
                     if pyxel.btn(pyxel.KEY_SPACE):
