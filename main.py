@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 import pyxel
 
 class Main_Char:
@@ -9,8 +9,7 @@ class Main_Char:
         self.life = 100
 
     def draw(self):
-        coef = pyxel.frame_count // 3 % 3
-        print(coef)
+        coef = pyxel.frame_count // 6 % 3
         pyxel.blt(self.player_X, self.player_Y, 0, 16*coef, 0, 16, 16, 11)
     
     def move(self):
@@ -29,10 +28,13 @@ class Monster:
     def __init__(self, x, y):
         self.monster_X = x
         self.monster_Y = y
+        
+        #self.gender = choice([16, 24, 32, 40])
+        self.gender = choice([16, 24])
 
     def draw(self):
-        coef = pyxel.frame_count // 3 % 3
-        pyxel.blt(self.monster_X, self.monster_Y, 0, 0, 16*coef, 16, 16, 11) 
+        coef = pyxel.frame_count // 4 % 2
+        pyxel.blt(self.monster_X, self.monster_Y, 0, 8*coef, self.gender, 8, 8, 9) 
 
 class Game:
 
@@ -40,7 +42,7 @@ class Game:
         pyxel.init(128, 128, title="Test mario game")
         pyxel.load("ressources.pyxres")
         
-        self.char = Main_Char(56, 42)
+        self.char = Main_Char(56, 110)
         self.monsters_list = []
 
         pyxel.run(self.update, self.draw)
@@ -53,10 +55,10 @@ class Game:
             self.create_monster()
     
     def new_dungeon(self, nb, coo_x, coo_y):
-        pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)
+        """pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)
+        pyxel.blt(108, 0, 0, 0, 48, 32, 8, "COULEUR TRANSPARENTE POUR LA PORTE")"""
         self.new_dungeon_monsters(5)
-        for monster in self.monsters_list:
-            monster.draw()
+        
 
     def update(self):
         self.char.move()
@@ -71,6 +73,10 @@ class Game:
 
             if len(self.monsters_list) == 0:
                 self.new_dungeon(0, 0, 52)
+
+            if len(self.monsters_list) != 0:
+                for monster in self.monsters_list:
+                    monster.draw()
 
 
 Game()
