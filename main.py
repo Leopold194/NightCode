@@ -81,7 +81,7 @@ class Game:
 
         for j in range(6):
             for i in range(7):
-                pyxel.blt(16+16*j, 16+16*i, 0, 0, 96, 16, 16)
+                pyxel.blt(16+16*j, 16+16*i, 0, 16-16*wall, 96, 16, 16)
 
     def fight(self):
         for monster in self.monsters_list:
