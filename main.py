@@ -29,16 +29,18 @@ class Monster:
         self.monster_X = x
         self.monster_Y = y
         
-        self.gender = choice([16, 24, 32, 40])
+        #self.gender = choice([16, 24, 32, 40])
+        self.gender = choice([16, 32])
 
     def draw(self):
         coef = pyxel.frame_count // 4 % 2
-        pyxel.blt(self.monster_X, self.monster_Y, 0, 8*coef, self.gender, 8, 8, 9) 
+        pyxel.blt(self.monster_X, self.monster_Y, 0, 16*coef, self.gender, 16, 16, 9)
+        #pyxel.blt(self.monster_X, self.monster_Y, 0, 8*coef, self.gender, 8, 8, 9) 
 
 class Game:
 
     def __init__(self):
-        pyxel.init(128, 128, title="Test mario game")
+        pyxel.init(128, 128, title="Nuit du cOde 2022")
         pyxel.load("ressources.pyxres")
 
         self.start = True
@@ -53,18 +55,18 @@ class Game:
     def create_monster(self):
         lvl =  2 if self.turn == 5 else 3 if self.turn == 10 else 1
         if lvl == 1:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
+            self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
         elif lvl == 2:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
+            self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
         elif lvl == 3:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
+            self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
 
     def new_dungeon_monsters(self, nb):
         for _ in range(nb):
             self.create_monster()
     
     def new_dungeon(self):
-        self.new_dungeon_monsters(5)
+        self.new_dungeon_monsters(self.turn)
         return randint(0, 1)
     
     def draw_dungeon(self, wall):
@@ -81,11 +83,19 @@ class Game:
 
     def fight(self):
         for monster in self.monsters_list:
-            if (abs(self.char.player_X - monster.monster_X) <= 10) and (abs(self.char.player_Y - monster.monster_Y) <= 10):
+            if monster.monster_X <= self.char.player_X+14 and monster.monster_Y <= self.char.player_Y+14 and monster.monster_X+14 >= self.char.player_X and monster.monster_Y+14 >= self.char.player_Y:
+                self.char.life -= 5
+                self.char.player_Y += randint(5, 15)
+            if monster.monster_X <= self.char.player_X+19 and monster.monster_Y <= self.char.player_Y+19 and monster.monster_X+19 >= self.char.player_X and monster.monster_Y+19 >= self.char.player_Y:
                 if pyxel.btn(pyxel.KEY_SPACE):
                     return True
+            """if (abs(self.char.player_X - monster.monster_X) <= 20) and (abs(self.char.player_Y - monster.monster_Y) <= 20):
+                if pyxel.btn(pyxel.KEY_SPACE):
+                    return True
+                if (monster.monster_X + 15 > self.char.player_X or monster.monster_X - 15 < self.char.player_X) and (monster.monster_Y - 15 < self.char.player_Y or monster.monster_Y + 15 > self.char.player_X):
+                    self.char.life -= 5
+                    self.char.player_Y += randint(5, 15)"""
                     
-
     def update(self):
         self.char.move()
         self.fight()
@@ -121,11 +131,13 @@ class Game:
             pyxel.text(5, 5, f"{int(time.time() - self.start_time)}s", color)
 
         elif self.char.life <= 0:
-            pyxel.text(5, 5, f"Vous avez perdu !\nVous étiez manche n°{self.turn}", 7)
+            pyxel.text(5, 5, f"Vous avez perdu !\nVous etiez manche n°{self.turn}", 7)
 
         elif self.turn > 10:
-            self.end_time = time.time()
-            pyxel.text(5, 5, f"Bravo ! Vous avez gagné en {self.start_time - self.end_time}.", 7)
+            self.all_time = int(time.time() - self.start_time)
+            h, r = self.all_time // 3600, self.all_time % 3600
+            m, s = r // 60, r % 60
+            pyxel.text(5, 5, f"Bravo ! Vous avez gagné en {h}h {m}m {s}s.", 7)
             pyxel.blt(56, 70, 0, "X", "Y", 16, 16, 11)
 
 Game()
