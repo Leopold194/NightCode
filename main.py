@@ -41,7 +41,7 @@ class Main_Char:
         if (pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)) and self.player_X < 95:
             self.player_X += 1
         if (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)):
-            if (self.player_X > 48 or self.player_X < 70) or self.player_Y > 17:
+            if (self.player_X > 48 and self.player_X < 70 and self.player_Y > 0) or self.player_Y > 17:
                 self.player_Y -= 1
         if (pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)) and self.player_Y < 112:
             self.player_Y += 1
@@ -121,7 +121,7 @@ class Game:
 
     def fight(self):
         for monster in self.monsters_list:
-            if not monster.b:
+            if not monster.boss:
                 if monster.monster_X <= self.char.player_X+14 and monster.monster_Y <= self.char.player_Y+14 and monster.monster_X+14 >= self.char.player_X and monster.monster_Y+14 >= self.char.player_Y:
                     self.char.life -= 5
                     self.char.player_Y += randint(5, 15)
