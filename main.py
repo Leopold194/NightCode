@@ -41,6 +41,8 @@ class Game:
     def __init__(self):
         pyxel.init(128, 128, title="Test mario game")
         pyxel.load("ressources.pyxres")
+
+        self.start = True
         
         self.char = Main_Char(56, 110)
         self.monsters_list = []
@@ -58,7 +60,14 @@ class Game:
         """pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)"""
         
         self.new_dungeon_monsters(5)
-        
+    
+    def draw_dungeon(self):
+        for i in range(8):
+            pyxel.blt(16*i, 0, 0, 0, 80, 16, 16)
+
+        for j in range(2):
+            for i in range(8):
+                pyxel.blt(112*j, 16*i, 0, 0, 80, 16, 16)
 
     def update(self):
         self.char.move()
@@ -66,16 +75,21 @@ class Game:
     def draw(self):
         pyxel.cls(0)
 
+        if self.start:
+            self.new_dungeon(0, 0, 52)
+            self.start = False
+
         if self.char.life > 0:
 
             pyxel.text(5, 5, f"{self.char.life} HP", 7)
             self.char.draw()
+            self.draw_dungeon()
 
             if len(self.monsters_list) == 0:
                 pyxel.blt(48, 0, 0, 0, 64, 32, 16)
-                if self.char.player_X <= 48 and self.char.player_Y <= 16:
-                    print("meuh")
+                if self.char.player_X >= 48 and self.char.player_X <= 80 and self.char.player_Y <= 16:
                     self.new_dungeon(0, 0, 52)
+                    self.char.player_X, self.char.player_Y = 56, 110
 
             if len(self.monsters_list) != 0:
                 pyxel.blt(48, 0, 0, 0, 48, 32, 16)
