@@ -74,8 +74,6 @@ class Game:
             self.home()
         elif self.rules_state:
             self.rules()
-        elif self.keys_state:
-            self.keys()
         elif self.play_state:
             self.play()
 

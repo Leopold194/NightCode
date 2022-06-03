@@ -2,6 +2,28 @@ from random import randint, choice
 import pyxel
 import time
 
+REGLES = "    Regles du jeu:\n\nLe joueur doit \nsurvivre aux \nmonstres qui \nmenacent le joueur!\n\n       Touche:\n\n-Frapper: espace\n-Se deplacer: fleches"
+
+BUTTON_PLAY_X = 128/2 - 50/2
+BUTTON_PLAY_Y = 30
+BUTTON_PLAY_H = 20
+BUTTON_PLAY_W = 50
+
+BUTTON_QUIT_X = 128/2 - 50/2
+BUTTON_QUIT_Y = 75
+BUTTON_QUIT_H = 20
+BUTTON_QUIT_W = 50
+
+BUTTON_RULES_X = 90
+BUTTON_RULES_Y = 110
+BUTTON_RULES_H = 15
+BUTTON_RULES_W = 35
+
+BUTTON_BACK_X = 3
+BUTTON_BACK_Y = 110
+BUTTON_BACK_H = 15
+BUTTON_BACK_W = 35
+
 class Main_Char:
 
     def __init__(self, x, y):
@@ -52,6 +74,12 @@ class Game:
         self.char = Main_Char(56, 110)
         self.monsters_list = []
 
+        pyxel.mouse(True)
+
+        self.home_state = True
+        self.rules_state = False
+        self.play_state = False
+
         pyxel.run(self.update, self.draw)
 
     def create_monster(self):
@@ -100,53 +128,109 @@ class Game:
     def give_end_time(self):
         return int(time.time() - self.start_time)
 
+    def home(self):
+
+        pyxel.rect(BUTTON_PLAY_X, BUTTON_PLAY_Y, BUTTON_PLAY_W, BUTTON_PLAY_H, 13) # (x,y,w,h,color)
+        pyxel.text(BUTTON_PLAY_X + BUTTON_PLAY_W/2 - 9, BUTTON_PLAY_Y + BUTTON_PLAY_H/2 - 2, "JOUER", 0)
+
+        pyxel.rect(BUTTON_QUIT_X, BUTTON_QUIT_Y, BUTTON_QUIT_W, BUTTON_QUIT_H, 13) # (x,y,w,h,color)
+        pyxel.text(BUTTON_QUIT_X + BUTTON_QUIT_W/2 - 13, BUTTON_QUIT_Y + BUTTON_QUIT_H/2 - 2, "QUITTER", 0)
+
+        pyxel.rect(BUTTON_RULES_X, BUTTON_RULES_Y, BUTTON_RULES_W, BUTTON_RULES_H, 13) # (x,y,w,h,color)
+        pyxel.text(BUTTON_RULES_X + BUTTON_RULES_W/2 - 11, BUTTON_RULES_Y + BUTTON_RULES_H/2 - 2, "Regles", 0)
+
+        pyxel.blt(5, 30, 0, 0, 0, 16, 16,11)
+        pyxel.blt(100, 30, 0, 112, 0, 16, 16,11)
+
+        pyxel.blt(60, 60, 0, 32, 16, 8, 8,9)
+        pyxel.blt(60, 100, 0, 32, 24, 8, 8,9)
+
+        pyxel.blt(100, 80, 0, 32, 32, 8, 8,9)
+        pyxel.blt(20, 80, 0, 32, 40, 8, 8,9)
+
+    def rules(self):
+
+        pyxel.rect(20, 20, 90, 80, 13) # (x,y,w,h,color)
+        pyxel.text(20+2, 20+2 , REGLES, 0)
+
+        pyxel.rect(BUTTON_BACK_X, BUTTON_BACK_Y, BUTTON_BACK_W, BUTTON_BACK_H, 13) # (x,y,w,h,color)
+        pyxel.text(BUTTON_BACK_X + BUTTON_BACK_W/2 - 14, BUTTON_BACK_Y + BUTTON_BACK_H/2 - 2, "Retour", 0)
+
     def update(self):
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+            if pyxel.mouse_x >= BUTTON_PLAY_X and pyxel.mouse_x <= BUTTON_PLAY_X+BUTTON_PLAY_W and pyxel.mouse_y >= BUTTON_PLAY_Y and pyxel.mouse_y <= BUTTON_PLAY_Y+BUTTON_PLAY_H:
+                self.home_state = False
+                self.play_state = True
+            elif pyxel.mouse_x >= BUTTON_QUIT_X and pyxel.mouse_x <= BUTTON_QUIT_X+BUTTON_QUIT_W and pyxel.mouse_y >= BUTTON_QUIT_Y and pyxel.mouse_y <= BUTTON_QUIT_Y+BUTTON_QUIT_H:
+                pyxel.quit()
+            elif pyxel.mouse_x >= BUTTON_RULES_X and pyxel.mouse_x <= BUTTON_RULES_X+BUTTON_RULES_W and pyxel.mouse_y >= BUTTON_RULES_Y and pyxel.mouse_y <= BUTTON_RULES_Y+BUTTON_RULES_H:
+                self.home_state = False
+                self.rules_state = True
+            elif pyxel.mouse_x >= BUTTON_BACK_X and pyxel.mouse_x <= BUTTON_BACK_X+BUTTON_BACK_W and pyxel.mouse_y >= BUTTON_BACK_Y and pyxel.mouse_y <= BUTTON_BACK_Y+BUTTON_BACK_H:
+                self.rules_state = False
+                self.home_state = True
+        
         self.char.move()
         self.fight()
 
     def draw(self):
         pyxel.cls(0)
-        self.all_time = int(time.time() - self.start_time)
-        if self.start:
-            self.wall = self.new_dungeon()
-            self.start = False
+        
+        if self.home_state or self.rules_state:
+            for i in range(8):
+                for y in range(8):
+                    pyxel.blt(i*16, y*16, 0, 0, 80, 16, 16)
 
-        if self.char.life > 0 and self.turn <= 1:
-            self.draw_dungeon(self.wall)
+            pyxel.text(42, 5, "The Dungeon", 7)
 
-            if len(self.monsters_list) == 0:
-                pyxel.blt(48, 0, 0, 0, 64, 32, 16)
-                if (self.char.player_X >= 48 and self.char.player_X <= 80) and self.char.player_Y <= 10:
-                    self.turn += 1
-                    self.wall = self.new_dungeon()
-                    self.char.player_X, self.char.player_Y = 56, 110
+            if self.home_state:
+                self.home()
+            if self.rules_state:
+                self.rules()
 
-            
-            if len(self.monsters_list) != 0:
-                pyxel.blt(48, 0, 0, 0, 48, 32, 16)
-                for monster in self.monsters_list:
-                    monster.draw()
+        elif self.play_state == True:
+            pyxel.mouse(False)
+            self.all_time = int(time.time() - self.start_time)
+            if self.start:
+                self.wall = self.new_dungeon()
+                self.start = False
 
-            pos = 48 if self.fight() == True else 0
-            self.char.draw(pos)
+            if self.char.life > 0 and self.turn <= 1:
+                self.draw_dungeon(self.wall)
 
-            color = 11 if self.wall == 1 else 7
-            pyxel.text(100, 5, f"{self.char.life} HP", color)
-            pyxel.text(5, 5, f"{int(time.time() - self.start_time)}s", color)
-            pyxel.text(5, 118, f"{self.turn}", color)
+                if len(self.monsters_list) == 0:
+                    pyxel.blt(48, 0, 0, 0, 64, 32, 16)
+                    if (self.char.player_X >= 48 and self.char.player_X <= 80) and self.char.player_Y <= 10:
+                        self.turn += 1
+                        self.wall = self.new_dungeon()
+                        self.char.player_X, self.char.player_Y = 56, 110
 
-        elif self.char.life <= 0:
-            self.draw_dungeon(self.wall)
-            pyxel.blt(70, 56, 0, 96, 0, 16, 16, 11)
-            pyxel.text(2, 2, f"Vous avez perdu !\nVous etiez manche n°{self.turn}", 7)
+                
+                if len(self.monsters_list) != 0:
+                    pyxel.blt(48, 0, 0, 0, 48, 32, 16)
+                    for monster in self.monsters_list:
+                        monster.draw()
 
-        elif self.turn > 1:
-  
-            all_time = self.give_end_time()
-            h, r = all_time // 3600, all_time % 3600
-            m, s = r // 60, r % 60
-            pyxel.text(50, 35, "Bravo !", 7)
-            pyxel.text(8, 50, f"Vous avez gagne en {h}h {m}m {s}s.", 7)
-            pyxel.blt(56, 70, 0, 112, 0, 16, 16, 11)
+                pos = 48 if self.fight() == True else 0
+                self.char.draw(pos)
+
+                color = 11 if self.wall == 1 else 7
+                pyxel.text(100, 5, f"{self.char.life} HP", color)
+                pyxel.text(5, 5, f"{int(time.time() - self.start_time)}s", color)
+                pyxel.text(5, 118, f"{self.turn}", color)
+
+            elif self.char.life <= 0:
+                self.draw_dungeon(self.wall)
+                pyxel.blt(70, 56, 0, 96, 0, 16, 16, 11)
+                pyxel.text(2, 2, f"Vous avez perdu !\nVous etiez manche n°{self.turn}", 7)
+
+            elif self.turn > 1:
+    
+                all_time = self.give_end_time()
+                h, r = all_time // 3600, all_time % 3600
+                m, s = r // 60, r % 60
+                pyxel.text(50, 35, "Bravo !", 7)
+                pyxel.text(8, 50, f"Vous avez gagne en {h}h {m}m {s}s.", 7)
+                pyxel.blt(56, 70, 0, 112, 0, 16, 16, 11)
 
 Game()
