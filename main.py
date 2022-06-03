@@ -1,4 +1,4 @@
-
+from random import randint
 import pyxel
 
 class Main_Char:
@@ -9,7 +9,9 @@ class Main_Char:
         self.life = 100
 
     def draw(self):
-        pyxel.blt(self.player_X,self.player_Y,0,0,0,16,16,1)
+        coef = pyxel.frame_count // 3 % 3
+        print(coef)
+        pyxel.blt(self.player_X, self.player_Y, 0, 16*coef, 0, 16, 16, 11)
     
     def move(self):
         if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
@@ -30,10 +32,9 @@ class Monster:
 
     def draw(self):
         coef = pyxel.frame_count // 3 % 3
-        pyxel.blt(self.x, self.y, 0, 0, 8 + 8*coef, 8, 8) 
+        pyxel.blt(self.monster_X, self.monster_Y, 0, 0, 16*coef, 16, 16, 11) 
 
 class Game:
-
 
     def __init__(self):
         pyxel.init(128, 128, title="Test mario game")
@@ -44,6 +45,19 @@ class Game:
 
         pyxel.run(self.update, self.draw)
 
+    def create_monster(self):
+        self.monsters_list.append(Monster(randint(0, 112), randint(20, 75)))
+
+    def new_dungeon_monsters(self, nb):
+        for _ in range(nb):
+            self.create_monster()
+    
+    def new_dungeon(self, nb, coo_x, coo_y):
+        pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)
+        self.new_dungeon_monsters(5)
+        for monster in self.monsters_list:
+            monster.draw()
+
     def update(self):
         self.char.move()
 
@@ -52,8 +66,11 @@ class Game:
 
         if self.char.life > 0:
             
-            pyxel.text(5, 5, f"{self.char.life} HP")
+            pyxel.text(5, 5, f"{self.char.life} HP", 7)
             self.char.draw()
+
+            if len(self.monsters_list) == 0:
+                self.new_dungeon(0, 0, 52)
 
 
 Game()
