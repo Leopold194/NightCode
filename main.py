@@ -113,7 +113,7 @@ class Game:
                 for monster in self.monsters_list:
                     monster.draw()
 
-            pos = 1 if self.fight == True else 0
+            pos = 48 if self.fight() == True else 0
             self.char.draw(pos)
 
             color = 11 if self.wall == 1 else 7
