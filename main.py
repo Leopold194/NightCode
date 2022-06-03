@@ -29,8 +29,8 @@ class Monster:
         self.monster_X = x
         self.monster_Y = y
         
-        #self.gender = choice([16, 24, 32, 40])
-        self.gender = choice([16, 24])
+        self.gender = choice([16, 24, 32, 40])
+        #self.gender = choice([16, 24])
 
     def draw(self):
         coef = pyxel.frame_count // 4 % 2
@@ -55,8 +55,8 @@ class Game:
             self.create_monster()
     
     def new_dungeon(self, nb, coo_x, coo_y):
-        """pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)
-        pyxel.blt(108, 0, 0, 0, 48, 32, 8, "COULEUR TRANSPARENTE POUR LA PORTE")"""
+        """pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)"""
+        pyxel.blt(108, 0, 0, 0, 48, 32, 16)
         self.new_dungeon_monsters(5)
         
 
