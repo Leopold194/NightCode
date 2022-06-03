@@ -48,18 +48,23 @@ class Main_Char:
 
 class Monster:
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, b = None):
         self.monster_X = x
         self.monster_Y = y
-        self.life = choice([30, 60])
-        
-        #self.gender = choice([16, 24, 32, 40])
         self.gender = choice([16, 32])
+        self.boss = b
+
+        if not self.boss:
+            self.life = choice([30, 60])
+        else:
+            self.life = 500
 
     def draw(self):
-        coef = pyxel.frame_count // 4 % 2
-        pyxel.blt(self.monster_X, self.monster_Y, 0, 16*coef, self.gender, 16, 16, 9)
-        #pyxel.blt(self.monster_X, self.monster_Y, 0, 8*coef, self.gender, 8, 8, 9) 
+        if not self.boss:
+            coef = pyxel.frame_count // 4 % 2
+            pyxel.blt(self.monster_X, self.monster_Y, 0, 16*coef, self.gender, 16, 16, 9)
+        else:
+            pyxel.blt(self.monster_X, self.monster_Y, 0, 0, 112, 32, 32, 9)
 
 class Game:
 
@@ -83,16 +88,17 @@ class Game:
         pyxel.run(self.update, self.draw)
 
     def create_monster(self):
-        lvl =  2 if self.turn == 5 else 3 if self.turn == 10 else 1
+        lvl =  2 if self.turn == 5 or self.turn == 10 else 1
         if lvl == 1:
             self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
         elif lvl == 2:
-            self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
-        elif lvl == 3:
-            self.monsters_list.append(Monster(randint(20, 88), randint(20, 90)))
+            self.monsters_list.append(Monster(randint(20, 72), randint(20, 74), True))
 
     def new_dungeon_monsters(self, nb):
-        for _ in range(nb):
+        if self.turn != 5 and self.turn != 10:
+            for _ in range(nb):
+                self.create_monster()
+        else:
             self.create_monster()
 
         [(20, 20), (40, 20), (60, 20), (80, 20), (90, 20), (20, 40), (20, 60), (20, 80), (20, 90)]
@@ -115,15 +121,26 @@ class Game:
 
     def fight(self):
         for monster in self.monsters_list:
-            if monster.monster_X <= self.char.player_X+14 and monster.monster_Y <= self.char.player_Y+14 and monster.monster_X+14 >= self.char.player_X and monster.monster_Y+14 >= self.char.player_Y:
-                self.char.life -= 5
-                self.char.player_Y += randint(5, 15)
-            if monster.monster_X <= self.char.player_X+19 and monster.monster_Y <= self.char.player_Y+19 and monster.monster_X+19 >= self.char.player_X and monster.monster_Y+19 >= self.char.player_Y:
-                if pyxel.btn(pyxel.KEY_SPACE):
-                    monster.life -= 3
-                    if monster.life <= 0:
-                        self.monsters_list.remove(monster)
-                    return True
+            if not monster.b:
+                if monster.monster_X <= self.char.player_X+14 and monster.monster_Y <= self.char.player_Y+14 and monster.monster_X+14 >= self.char.player_X and monster.monster_Y+14 >= self.char.player_Y:
+                    self.char.life -= 5
+                    self.char.player_Y += randint(5, 15)
+                if monster.monster_X <= self.char.player_X+19 and monster.monster_Y <= self.char.player_Y+19 and monster.monster_X+19 >= self.char.player_X and monster.monster_Y+19 >= self.char.player_Y:
+                    if pyxel.btn(pyxel.KEY_SPACE):
+                        monster.life -= 3
+                        if monster.life <= 0:
+                            self.monsters_list.remove(monster)
+                        return True
+            else:
+                if monster.monster_X <= self.char.player_X+30 and monster.monster_Y <= self.char.player_Y+30 and monster.monster_X+30 >= self.char.player_X and monster.monster_Y+30 >= self.char.player_Y:
+                    self.char.life -= 5
+                    self.char.player_Y += randint(5, 15)
+                if monster.monster_X <= self.char.player_X+35 and monster.monster_Y <= self.char.player_Y+35 and monster.monster_X+35 >= self.char.player_X and monster.monster_Y+35 >= self.char.player_Y:
+                    if pyxel.btn(pyxel.KEY_SPACE):
+                        monster.life -= 3
+                        if monster.life <= 0:
+                            self.monsters_list.remove(monster)
+                        return True
 
     def give_end_time(self):
         return int(time.time() - self.start_time)
@@ -195,7 +212,7 @@ class Game:
                 self.wall = self.new_dungeon()
                 self.start = False
 
-            if self.char.life > 0 and self.turn <= 1:
+            if self.char.life > 0 and self.turn <= 10:
                 self.draw_dungeon(self.wall)
 
                 if len(self.monsters_list) == 0:
@@ -224,7 +241,7 @@ class Game:
                 pyxel.blt(70, 56, 0, 96, 0, 16, 16, 11)
                 pyxel.text(2, 2, f"Vous avez perdu !\nVous etiez manche n°{self.turn}", 7)
 
-            elif self.turn > 1:
+            elif self.turn > 10:
     
                 all_time = self.give_end_time()
                 h, r = all_time // 3600, all_time % 3600
