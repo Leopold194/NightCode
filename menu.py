@@ -54,7 +54,7 @@ class Game:
                 self.home_state = False
                 self.rules_state = True
             if pyxel.mouse_x >= BUTTON_BACK_X and pyxel.mouse_x <= BUTTON_BACK_X+BUTTON_BACK_W and pyxel.mouse_y >= BUTTON_BACK_Y and pyxel.mouse_y <= BUTTON_BACK_Y+BUTTON_BACK_H:
-                print("touches")
+                print("back")
                 self.rules_state = False
                 self.home_state = True
                 
