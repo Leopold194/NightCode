@@ -56,7 +56,7 @@ class Game:
     
     def new_dungeon(self, nb, coo_x, coo_y):
         """pyxel.blt(0, 0, nb, coo_x, coo_y, 128, 128)"""
-        pyxel.blt(108, 0, 0, 0, 48, 32, 16)
+        
         self.new_dungeon_monsters(5)
         
 
@@ -67,14 +67,18 @@ class Game:
         pyxel.cls(0)
 
         if self.char.life > 0:
-            
+
             pyxel.text(5, 5, f"{self.char.life} HP", 7)
             self.char.draw()
 
             if len(self.monsters_list) == 0:
-                self.new_dungeon(0, 0, 52)
+                pyxel.blt(48, 0, 0, 0, 64, 32, 16)
+                if self.char.player_X <= 48 and self.char.player_Y <= 16:
+                    print("meuh")
+                    self.new_dungeon(0, 0, 52)
 
             if len(self.monsters_list) != 0:
+                pyxel.blt(48, 0, 0, 0, 48, 32, 16)
                 for monster in self.monsters_list:
                     monster.draw()
 
