@@ -85,10 +85,10 @@ class Game:
 
     def fight(self):
         for monster in self.monsters_list:
-            if (self.char.player_X - monster.monster_X <= abs(2)) and (self.char.player_Y - monster.monster_Y <= abs(2)):
+            if (abs(self.char.player_X - monster.monster_X) <= 10) and (abs(self.char.player_Y - monster.monster_Y) <= 10):
                 if pyxel.btn(pyxel.KEY_SPACE):
-                    print("--------------\n"+str(self.char.player_X) + " and " + str(monster.monster_X))
-                    print("--------------\n"+str(self.char.player_Y) + " et " + str(monster.monster_Y))
+                    self.char.draw_in_fight()
+                    
 
     def update(self):
         self.char.move()
