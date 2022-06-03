@@ -9,13 +9,9 @@ class Main_Char:
         self.player_Y = y
         self.life = 100
 
-    def draw(self):
+    def draw(self, pos):
         coef = pyxel.frame_count // 6 % 3
-        pyxel.blt(self.player_X, self.player_Y, 0, 16*coef, 0, 16, 16, 11)
-
-    def draw_in_fight(self):
-        coef = pyxel.frame_count // 6 % 3
-        pyxel.blt(self.player_X, self.player_Y, 0, 48+16*coef, 0, 16, 16, 11)
+        pyxel.blt(self.player_X, self.player_Y, 0, pos+16*coef, 0, 16, 16, 11)
     
     def move(self):
         if (pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT)) and self.player_X > 17:
@@ -87,7 +83,7 @@ class Game:
         for monster in self.monsters_list:
             if (abs(self.char.player_X - monster.monster_X) <= 10) and (abs(self.char.player_Y - monster.monster_Y) <= 10):
                 if pyxel.btn(pyxel.KEY_SPACE):
-                    self.char.draw_in_fight()
+                    return True
                     
 
     def update(self):
@@ -117,7 +113,8 @@ class Game:
                 for monster in self.monsters_list:
                     monster.draw()
 
-            self.char.draw()
+            pos = 1 if self.fight == True else 0
+            self.char.draw(pos)
 
             color = 11 if self.wall == 1 else 7
             pyxel.text(100, 5, f"{self.char.life} HP", color)
