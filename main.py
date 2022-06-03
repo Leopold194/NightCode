@@ -22,7 +22,6 @@ class Main_Char:
             self.player_X -= 1
         if (pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT)) and self.player_X < 95:
             self.player_X += 1
-
         if (pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP)) and self.player_Y > 17:
             self.player_Y -= 1
         if (pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN)) and self.player_Y < 112:
@@ -58,11 +57,11 @@ class Game:
     def create_monster(self):
         lvl =  2 if self.turn == 5 else 3 if self.turn == 10 else 1
         if lvl == 1:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
         elif lvl == 2:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
         elif lvl == 3:
-            self.monsters_list.append(Monster(randint(20, 108), randint(20, 100)))
+            self.monsters_list.append(Monster(randint(20, 108), randint(20, 90)))
 
     def new_dungeon_monsters(self, nb):
         for _ in range(nb):
@@ -81,17 +80,18 @@ class Game:
                 pyxel.blt(112*j, 16*i, 0, 16*wall, 80, 16, 16)
 
         for j in range(6):
-            for i in range(6):
+            for i in range(7):
                 pyxel.blt(16+16*j, 16+16*i, 0, 0, 96, 16, 16)
 
     def fight(self):
         for monster in self.monsters_list:
-            if self.char.player_X - monster.monster_x <= abs(2) and self.char.player_Y - monster.monster_Y <= abs(2):
+            if self.char.player_X - monster.monster_X <= abs(2) or self.char.player_Y - monster.monster_Y <= abs(2):
                 if pyxel.btn(pyxel.KEY_SPACE):
-                    pass
+                    print("meug")
 
     def update(self):
         self.char.move()
+        self.fight()
 
     def draw(self):
         pyxel.cls(0)
