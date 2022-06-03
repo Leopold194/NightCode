@@ -9,8 +9,7 @@ class Main_Char:
         self.life = 100
 
     def draw(self):
-        coef = pyxel.frame_count // 3 % 3
-        print(coef)
+        coef = pyxel.frame_count // 6 % 3
         pyxel.blt(self.player_X, self.player_Y, 0, 16*coef, 0, 16, 16, 11)
     
     def move(self):
